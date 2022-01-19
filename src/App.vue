@@ -2,6 +2,10 @@
   <div id="app">
     <!-- 路由的出口 -->
     <router-view />
+    <div>
+      <i class="iconfont icon-dianzan"></i>
+    </div>
+
   </div>
 </template>
 
