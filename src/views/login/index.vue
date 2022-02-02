@@ -1,7 +1,10 @@
 <template>
     <div class="login-container">
-        <van-nav-bar title="登录" />
-
+        <van-nav-bar title="登录">
+            <template #left>
+                <van-icon name="cross" color="#fff" @click='$router.back()'/>
+            </template>
+        </van-nav-bar>
         <van-form ref="loginForm" @submit="onSubmit">
             <van-field v-model='user.mobile' name="mobile" placeholder="请输入手机号" :rules='userFormRules.mobile' type='number' maxlength='11'>
                 <i slot='left-icon' class="toutiao icon-shouji"></i>
