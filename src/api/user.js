@@ -1,9 +1,10 @@
 // 用户相关请求模块
 import request from '@/utils/request'
+import store from '@/store'
 
 export const login = data => {
     return request({
-        methods: 'POST',
+        method: 'POST',
         url: '/app/v1_0/authorizations',
         data
     })
@@ -11,7 +12,17 @@ export const login = data => {
 
 export const sendSms = mobile => {
     return request({
-        methods: 'GET',
+        method: 'GET',
         url: `/app/v1_0/sms/codes/${mobile}`
+    })
+}
+
+export const getUserInfo = () => {
+    return request({
+        method: 'GET',
+        url: '/app/v1_0/user/',
+        headers: {
+            Authorization: `Bearer ${store.state.user.token}`
+        }
     })
 }
