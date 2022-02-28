@@ -2,8 +2,8 @@
     <div class="home-container">
         <van-nav-bar fixed>
             <template #title>
-                <van-button class="search-btn" round type="info" size="small">
-                    <i slot="icon" class="toutiao icon-sousuo"/>
+                <van-button class="search-btn" round type="info" size="small" to="/search" >
+                    <i slot="icon" class="toutiao icon-sousuo" />
                     搜索</van-button>
             </template>
         </van-nav-bar>
@@ -12,28 +12,41 @@
                 <article-list :channel="item"  />
             </van-tab>
             <div slot="nav-right" class="placeholder"></div>
-            <div slot="nav-right" class="ham-btn" >
+            <div slot="nav-right" class="ham-btn" @click="isChannelEditShow = true" >
                 <i class="toutiao icon-gengduo" />
             </div>
         </van-tabs>
+        <van-popup
+        v-model="isChannelEditShow"
+        position="bottom"
+        closeable
+        close-icon-position="top-left"
+        :style="{ height: '100%' }"
+        >
+            <channel-edit :myChannels="userChannels" :active='active' @update-active="onUpdateActive"></channel-edit>
+        </van-popup>
     </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import { mapState } from 'vuex'
-import ArticleList from './components/article-list.vue'
+import ArticleList from './components/article-list'
+import ChannelEdit from './components/channel-edit'
+import { getItem } from '@/utils/storage'
 
     export default {
         name: 'HomeIndex',
         components: {
-            ArticleList
+            ArticleList,
+            ChannelEdit
         },
         props: {},
         data () {
             return {
                 active: 0,
-                userChannels: {}
+                userChannels: {},
+                isChannelEditShow: false
             }
         },
         created () {
@@ -45,11 +58,27 @@ import ArticleList from './components/article-list.vue'
         methods: {
             async loadUserChannels () {
                 try {
-                    const { data } = await getUserChannels()
-                    this.userChannels = data.data.channels
+                    let channels = []
+                    if (this.user) {
+                        const { data } = await getUserChannels()
+                        channels = data.data.channels
+                    } else {
+                        const localChannels = getItem('TOUTIAO_CHANNELS')
+                        if (localChannels) {
+                            channels = localChannels
+                        } else {
+                            const { data } = await getUserChannels()
+                            channels = data.data.channels
+                        }
+                    }
+                    this.userChannels = channels
                 } catch (err) {
                     this.$toast('获取数据失败，请稍后重试')
                 }
+            },
+            onUpdateActive (index, isChannelEditShow = true) {
+                this.active = index
+                this.isChannelEditShow = isChannelEditShow
             }
         },
         mounted () {}
