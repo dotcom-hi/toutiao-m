@@ -50,3 +50,26 @@ export const deleteFollow = (target) => {
         url: `/app/v1_0/user/followings/${target}`
     })
 }
+
+export const getUserProfile = (target) => {
+    return request({
+        method: 'GET',
+        url: '/app/v1_0/user/profile'
+    })
+}
+
+export const updateUserProfile = (data) => {
+    return request({
+        method: 'PUT',
+        url: '/app/v1_0/user/profile',
+        data
+    })
+}
+
+export const updateUserPhoto = (data) => {
+    return request({
+        method: 'PUT',
+        url: '/app/v1_0/user/photo',
+        data
+    })
+}
