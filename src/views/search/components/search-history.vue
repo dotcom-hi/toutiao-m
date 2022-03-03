@@ -1,30 +1,20 @@
 <template>
     <div class="search-history">
         <van-cell title="搜索历史">
-            <span>全部删除</span>
-            <span>完成</span>
-            <van-icon name="delete" />
+            <template v-if="isDeleteShow">
+                <span @click="searchHistories = []">全部删除</span>
+                &nbsp;&nbsp;
+                <span @click="isDeleteShow = false" >完成</span>
+            </template>
+            <van-icon v-else name="delete" @click="isDeleteShow = true" />
         </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
-        </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
-        </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
-        </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
-        </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
-        </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
-        </van-cell>
-        <van-cell title="搜索历史">
-            <van-icon name="close" />
+        <van-cell
+        v-for="(item, index) in searchHistories"
+        :key="index"
+        :title="item"
+        @click="onHistoryClick(item, index)"
+        >
+            <van-icon v-show="isDeleteShow" name="close"/>
         </van-cell>
     </div>
 </template>
@@ -33,13 +23,28 @@
 export default {
     name: 'SearchHistory',
     components: {},
-    props: {},
+    props: {
+        searchHistories: {
+            type: Array,
+            required: true
+        }
+    },
     data () {
-        return {}
+        return {
+            isDeleteShow: false
+        }
     },
     computed: {},
     watch: {},
-    methods: {},
+    methods: {
+        onHistoryClick (item, index) {
+            if (this.isDeleteShow) {
+                this.searchHistories.splice(index, 1)
+            } else {
+                this.$emit('search', item)
+            }
+        }
+    },
     created () {},
     mounted () {}
 }

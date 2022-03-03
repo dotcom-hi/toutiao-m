@@ -8,12 +8,24 @@
                 background="#3296fa"
                 @search="onSearch"
                 @cancel="onCancel"
+                @focus="isResultShow = false"
             />
         </form>
-
-        <search-history />
-        <search-suggestion />
-        <search-result />
+        <search-result
+        v-if="isResultShow"
+        :search-text = searchText
+        />
+        <search-suggestion
+        v-else-if="searchText"
+        :search-text = searchText
+        @search="onSearch"
+        />
+        <search-history
+        v-else
+        :search-histories="searchHistories"
+        @search="onSearch"
+        @clear-search-histories="searchHistories = []"
+        />
     </div>
 </template>
 
@@ -21,6 +33,7 @@
 import SearchHistory from './components/search-history'
 import SearchResult from './components/search-result'
 import SearchSuggestion from './components/search-suggestion'
+import { getItem, setItem } from '@/utils/storage'
 
 export default {
     name: 'SearchIndex',
@@ -32,14 +45,26 @@ export default {
     props: {},
     data () {
         return {
-            searchText: ''
+            searchText: '',
+            isResultShow: false,
+            searchHistories: getItem('TOUTIAO_SEARCH_HISTORIES') || []
         }
     },
     computed: {},
-    watch: {},
+    watch: {
+        searchHistories (val) {
+            setItem('TOUTIAO_SEARCH_HISTORIES', val)
+        }
+    },
     methods: {
         onSearch (val) {
-            this.$toast(val)
+            this.searchText = val
+            const index = this.searchHistories.indexOf(val)
+            if (index !== -1) {
+                this.searchHistories.splice(index, 1)
+            }
+            this.searchHistories.unshift(val)
+            this.isResultShow = true
         },
         onCancel () {
             this.$router.back()
@@ -52,8 +77,17 @@ export default {
 
 <style scoped lang='less'>
     .search-container {
-        ::v-deep .van-search__action{
-            color: #fff;
+        padding-top: 108px;
+        ::v-deep .van-search{
+            position:fixed;
+            left:0;
+            top:0;
+            right:0;
+            z-index: 1;
+            .van-search__action{
+                color: #fff;
+            }
         }
+
     }
 </style>
